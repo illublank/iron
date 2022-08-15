@@ -9,5 +9,5 @@ import (
 
 func TestInformers(t *testing.T) {
 
-  informers.NewInformers[v1.ChannelList](nil, "test", nil)
+  informers.NewInformers[*v1.ChannelList](nil, "test", "channels", nil)
 }

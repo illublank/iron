@@ -2,7 +2,9 @@ package informers
 
 import (
 	"context"
+	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/illublank/iron/test/client/clientset/versioned/scheme"
@@ -14,20 +16,21 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-func NewInformers[ListT runtime.Object](client rest.Interface, namespace string, ctx context.Context, optsfuncs ...internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewInformers[ListT runtime.Object](client rest.Interface, namespace, resource string, ctx context.Context, optsfuncs ...internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
   var indexers cache.Indexers = cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}
   
-  objListType := reflect.TypeOf((*ListT)(nil)).Elem()
+  objListType := reflect.TypeOf((*ListT)(nil)).Elem().Elem()
   f, _ := objListType.FieldByName("Items")
   objType := f.Type.Elem()
   var obj runtime.Object = reflect.New(objType).Interface().(runtime.Object)
+  fmt.Println(objListType, objType, strings.ToLower(objType.Name())+"s")
   return cache.NewSharedIndexInformer(
     &cache.ListWatch{
       ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {
         for i := 0; i < len(optsfuncs); i++ {
           optsfuncs[i](&opts)
         }
-        var result ListT
+        var result ListT = reflect.New(objListType).Interface().(ListT)
         var timeout time.Duration
         if opts.TimeoutSeconds != nil {
           timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
