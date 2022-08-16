@@ -23,6 +23,10 @@ type ServiceStore cache.Store
 
 var ServiceStoreType = reflect.TypeOf((*ServiceStore)(nil)).Elem()
 
+type ConfigMapStore cache.Store
+
+var ConfigMapStoreType = reflect.TypeOf((*ConfigMapStore)(nil)).Elem()
+
 type MockStore struct {
   cache.Store
 }
