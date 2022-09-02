@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/illublank/go-common/config"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -25,7 +24,7 @@ type Controller[T any] struct {
 	doneCh                chan struct{}
 }
 
-func NewController[T any](cfg config.Config, restClient rest.Interface, gvr schema.GroupVersionResource, informer cache.SharedIndexInformer) *Controller[T] {
+func NewController[T any](cfg config.Config, restClient rest.Interface, informer cache.SharedIndexInformer) *Controller[T] {
 	return &Controller[T]{
 		client:         kubernetes.New(restClient),
 		informer:       informer,
